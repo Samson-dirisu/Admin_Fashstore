@@ -8,17 +8,19 @@ class BrandService {
   void createBrand(String name) {
     var id = Uuid();
     String brandId = id.v1();
-    _firebaseFirestore.collection(ref).doc(brandId).set({"categoryname": name});
+    _firebaseFirestore.collection(ref).doc(brandId).set({"brand": name});
   }
 
-  Future<List> getBrands() {
-    Stream<QuerySnapshot> snapshots =
-        _firebaseFirestore.collection(ref).snapshots();
-
-    List brands;
-
-    snapshots.forEach((snap) {
-      brands.insert(0, snap.docs);
+  Future<List<DocumentSnapshot>> getBrands() {
+    return _firebaseFirestore.collection(ref).get().then((snaps) {
+      return snaps.docs;
     });
   }
+
+   Future getSuggestions(String suggestion) => _firebaseFirestore
+      .collection(ref)
+      .where("brand", isEqualTo: suggestion)
+      .get()
+      .then((snap) => snap.docs);
+
 }

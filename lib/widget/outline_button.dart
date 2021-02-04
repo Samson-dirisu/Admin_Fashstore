@@ -11,7 +11,7 @@ class CustomOutlineButton extends StatelessWidget {
         borderSide: BorderSide(color: Colors.grey, width: 2.0),
         onPressed: () {},
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 40, 14, 40),
+          padding: const EdgeInsets.fromLTRB(14, 60, 14, 60),
           child: Icon(Icons.add, color: Colors.white),
         ),
       ),
