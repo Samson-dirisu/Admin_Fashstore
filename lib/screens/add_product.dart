@@ -13,6 +13,7 @@ class AddProduct extends StatefulWidget {
 class _AddProductState extends State<AddProduct> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController _productNameController = TextEditingController();
+  TextEditingController _quantityController = TextEditingController();
   List<DocumentSnapshot> brands = <DocumentSnapshot>[];
   List<DocumentSnapshot> categories = <DocumentSnapshot>[];
   List<DropdownMenuItem<String>> categoriesDropDown =
@@ -22,19 +23,20 @@ class _AddProductState extends State<AddProduct> {
   String _currentBrand = '';
   CategoryService _categoryService = CategoryService();
   BrandService _brandService = BrandService();
+  List<String> selectedSizes = <String>[];
 
   @override
   void initState() {
     getCategories();
-    //getBrands();
-    //_currentCategory = categoriesDropDown[0].value;
+    getBrands();
     super.initState();
   }
 
   List<DropdownMenuItem<String>> getCategoriesDropdown() {
     List<DropdownMenuItem<String>> items = List();
     for (int i = 0; i < categories.length; i++) {
-      setState(() {
+      setState(
+        () {
           items.insert(
             0,
             DropdownMenuItem(
@@ -43,6 +45,20 @@ class _AddProductState extends State<AddProduct> {
             ),
           );
         },
+      );
+    }
+    return items;
+  }
+
+  List<DropdownMenuItem<String>> getBrandDropdown() {
+    List<DropdownMenuItem<String>> items = List();
+    for (int i = 0; i < brands.length; i++) {
+      items.insert(
+        0,
+        DropdownMenuItem(
+          child: Text(brands[i].data()['brand']),
+          value: brands[i].data()['brand'],
+        ),
       );
     }
     return items;
@@ -120,35 +136,138 @@ class _AddProductState extends State<AddProduct> {
                 ),
 
                 // SELECT CATEGORY
-                Container(
-                  alignment: Alignment.center,
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                           Text("Category", style: TextStyle(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Category",
+                          style: TextStyle(
                             color: Colors.white,
-                          ),),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
-                            child: DropdownButton(
-                              items:  categoriesDropDown,
-                              onChanged: changeSelectionCategory,
-                              value: _currentCategory
-                            ),
                           ),
-                         
-                        ],
-                      ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 15.0, top: 8.0),
+                          child: DropdownButton(
+                              items: categoriesDropDown,
+                              onChanged: changeSelectionCategory,
+                              value: _currentCategory),
+                        ),
+                      ],
+                    ),
+                    // Select brand
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Brand",
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 15.0, vertical: 0.0),
+                          child: DropdownButton(
+                              items: brandDropDown,
+                              onChanged: changeSelectionBrand,
+                              value: _currentBrand),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
 
-                      FlatButton(
-                        onPressed: () {},
-                        textColor: Colors.white,
-                        color: Colors.pink.shade100,
-                        child: Text("Add Product"),
+                // QUANTITY FIELD
+                TextFormField(
+                  controller: _quantityController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: "Quantity",
+                  ),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      String returnedValue =
+                          "You must enter quantity of product";
+                      return returnedValue;
+                    } else
+                      return null;
+                  },
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.only(top: 20.0, bottom: 0.0),
+                  child: Center(
+                    child: Text(
+                      'Available sizes',
+                      style: TextStyle(
+                        color: Colors.white,
                       ),
-                    ],
+                    ),
+                  ),
+                ),
+
+                // CHECKBOX
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Checkbox(
+                        value: selectedSizes.contains('XS'),
+                        onChanged: (value) => changeSelectedSize(value, 'XS')),
+                    Text('XS'),
+                    Checkbox(value: false, onChanged: null),
+                    Text('S'),
+                    Checkbox(value: false, onChanged: null),
+                    Text('M'),
+                    Checkbox(value: false, onChanged: null),
+                    Text('L'),
+                    Checkbox(value: false, onChanged: null),
+                    Text('XL'),
+                  ],
+                ),
+
+                Row(
+                  textDirection: TextDirection.ltr,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Checkbox(value: false, onChanged: null),
+                    Text('30'),
+                    Checkbox(value: false, onChanged: null),
+                    Text('32'),
+                    Checkbox(value: false, onChanged: null),
+                    Text('34'),
+                    Checkbox(value: false, onChanged: null),
+                    Text('36'),
+                    Checkbox(value: false, onChanged: null),
+                    Text('38'),
+                  ],
+                ),
+
+                Row(
+                  textDirection: TextDirection.ltr,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Checkbox(value: false, onChanged: null),
+                    Text('40'),
+                    Checkbox(value: false, onChanged: null),
+                    Text('42'),
+                    Checkbox(value: false, onChanged: null),
+                    Text('44'),
+                    Checkbox(value: false, onChanged: null),
+                    Text('46'),
+                    Checkbox(value: false, onChanged: null),
+                    Text('48'),
+                  ],
+                ),
+
+                Center(
+                  child: FlatButton(
+                    onPressed: () {},
+                    textColor: Colors.white,
+                    color: Colors.pink.shade100,
+                    child: Text("Add Product"),
                   ),
                 ),
               ],
@@ -159,13 +278,13 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
-   getCategories() async {
+  getCategories() async {
     List<DocumentSnapshot> data = await _categoryService.getCategories();
     setState(() {
       categories = data;
       _currentCategory = categories[0].data()['category'];
-      
-    categoriesDropDown = getCategoriesDropdown();
+
+      categoriesDropDown = getCategoriesDropdown();
     });
   }
 
@@ -173,5 +292,32 @@ class _AddProductState extends State<AddProduct> {
     setState(() {
       return _currentCategory = selectedCategory;
     });
+  }
+
+  getBrands() async {
+    List<DocumentSnapshot> data = await _brandService.getBrands();
+    setState(() {
+      brands = data;
+      _currentBrand = data[0].data()['brand'];
+      brandDropDown = getBrandDropdown();
+    });
+  }
+
+  changeSelectionBrand(String selectedBrand) {
+    setState(() {
+      _currentBrand = selectedBrand;
+    });
+  }
+
+  void changeSelectedSize(bool value, String size) {
+    if (value) {
+      setState(() {
+        selectedSizes.remove(size);
+      });
+    } else {
+      setState(() {
+        selectedSizes.add(size);
+      });
+    }
   }
 }
