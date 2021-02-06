@@ -37,6 +37,7 @@ dependencies:
   fluttertoast: ^7.1.6
   image_picker: ^0.6.7+22
   flutter_typeahead: ^2.0.0
+  firebase_storage: ^7.0.0
   
 
 dev_dependencies:
