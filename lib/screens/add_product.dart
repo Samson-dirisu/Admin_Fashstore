@@ -384,11 +384,11 @@ class _AddProductState extends State<AddProduct> {
     }
   }
 
-  Future _selectImage(int number) async {
+  Future <void> _selectImage(int number) async {
     ImagePicker imagePicker = ImagePicker();
     File tempImage;
 
-    final pickedImage = await imagePicker.getImage(source: ImageSource.gallery);
+    final PickedFile pickedImage = await imagePicker.getImage(source: ImageSource.gallery);
     pickedImage == null
         ? print("select image")
         : tempImage = File(pickedImage.path);
@@ -421,7 +421,7 @@ class _AddProductState extends State<AddProduct> {
     }
   }
 
-  Widget displayImage(File image) {
+  Widget displayImage(image) {
     if (image == null) {
       return Icon(
         Icons.add,
